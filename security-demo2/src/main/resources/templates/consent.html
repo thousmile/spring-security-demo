@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>授权管理</title>
+    <link th:href="@{/webjars/bootstrap/4.6.2/css/bootstrap.min.css}" rel="stylesheet">
+    <link th:href="@{/css/consent.css}" rel="stylesheet">
+</head>
+
+<body>
+<div class="container-fluid">
+    <div class="card card-consent">
+        <div class="card-header text-center">
+            <strong th:text="${clientName}"></strong>
+        </div>
+        <div class="card-body">
+            <h5 class="card-title text-center">希望获得以下许可：</h5>
+            <hr style="width: 90%">
+            <form name="consentForm" method="post" action="/oauth2/authorize">
+                <input type="hidden" name="client_id" th:value="${clientId}">
+                <input type="hidden" name="state" th:value="${state}">
+
+                <div th:each="scope: ${scopes}" class="form-group form-check py-1" style="margin-left: 5%">
+                    <input class="form-check-input"
+                           type="checkbox"
+                           name="scope"
+                           th:value="${scope.scope}"
+                           th:id="${scope.scope}"
+                           checked>
+                    <label class="form-check-label font-weight-bold"
+                           th:for="${scope.scope}"
+                           th:text="${scope.scope}=='profile'?(${scope.description}+'('+${principalName}+')'):${scope.description}">
+                    </label>
+                </div>
+
+                <hr style="width: 90%">
+                <div class="form-group pt-3">
+                    <button class="btn btn-primary btn-lg submit-consent" type="submit" id="submitConsent">
+                        授权同意
+                    </button>
+                    <button class="btn btn-primary btn-lg cancel-consent" type="button" id="cancelConsent"
+                            onclick="cancelConsent();">
+                        取消
+                    </button>
+                </div>
+            </form>
+        </div>
+        <div class="card-footer text-muted text-center">
+            <div>授权后将重定向到:</div>
+            <p><b th:text="${redirectUri}"></b></p>
+        </div>
+    </div>
+</div>
+<script th:src="@{/webjars/jquery/3.5.1/jquery.min.js}"></script>
+<script th:src="@{/webjars/bootstrap/4.6.2/js/bootstrap.min.js}"></script>
+<script>
+    $(document).ready(function () {
+        $("#cancelConsent").click(function () {
+            document.consentForm.reset();
+            location.href = "/index"
+        });
+    });
+</script>
+</body>
+</html>

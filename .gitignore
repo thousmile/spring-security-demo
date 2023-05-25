@@ -1,0 +1,3 @@
+# 项目排除路径
+/security-demo1/target/
+/security-demo2/target/
