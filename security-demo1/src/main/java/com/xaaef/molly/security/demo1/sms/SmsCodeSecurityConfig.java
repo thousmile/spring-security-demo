@@ -8,6 +8,9 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.context.DelegatingSecurityContextRepository;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
+import org.springframework.security.web.context.RequestAttributeSecurityContextRepository;
 import org.springframework.stereotype.Component;
 
 
@@ -27,6 +30,11 @@ public class SmsCodeSecurityConfig extends SecurityConfigurerAdapter<DefaultSecu
         var handler = new SmsCodeAuthenticationHandler();
         filter.setAuthenticationFailureHandler(handler);
         filter.setAuthenticationSuccessHandler(handler);
+        filter.setSecurityContextRepository(
+                new DelegatingSecurityContextRepository(
+                        new RequestAttributeSecurityContextRepository(),
+                        new HttpSessionSecurityContextRepository())
+        );
 
         var provider = new SmsCodeAuthenticationProvider(userDetailsService);
         http.authenticationProvider(provider)

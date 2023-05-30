@@ -8,6 +8,9 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.context.DelegatingSecurityContextRepository;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
+import org.springframework.security.web.context.RequestAttributeSecurityContextRepository;
 import org.springframework.stereotype.Component;
 
 
@@ -27,6 +30,11 @@ public class EmailCodeSecurityConfig extends SecurityConfigurerAdapter<DefaultSe
         var handler = new EmailCodeAuthenticationHandler();
         filter.setAuthenticationFailureHandler(handler);
         filter.setAuthenticationSuccessHandler(handler);
+        filter.setSecurityContextRepository(
+                new DelegatingSecurityContextRepository(
+                        new RequestAttributeSecurityContextRepository(),
+                        new HttpSessionSecurityContextRepository())
+        );
 
         var provider = new EmailCodeAuthenticationProvider(userDetailsService);
         http.authenticationProvider(provider)
